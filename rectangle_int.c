@@ -44,16 +44,12 @@ double trapeze(double *tab, int n, double dx) {
 
 
 double simpson(double *tab, int n, double dx) {
-	double integ = f(tab[0]) + f(tab[n-1]);
+	double integ = f(tab[0]) + f(tab[n-1]), integ_pair=0, integ_impair=0;
 	for (int i=1; i<n-1; i++) {
-		if (i%2==0) {
-			integ += 2 * f(tab[i]);
-		}
-		else {
-			integ += 4 * f(tab[i]);
-		}	
+		if (i%2==0) { integ_pair += 2 * f(tab[i]);}
+		else { integ_impair += 4 * f(tab[i]);}	
 	}
-	return (dx/3) * integ;
+	return (dx/3) * (integ_pair + integ_impair + integ);
 }
 
 
@@ -63,13 +59,13 @@ double simpson(double *tab, int n, double dx) {
 
 
 int main() {
-	double a=0., b=M_PI/2, rec_gauche, rec_droite, rec_milieu, trap, simp, val_exacte=1.0;
+	double a=0., b=M_PI/2, rec_gauche, rec_droite, rec_milieu, trap, simp=0, val_exacte=1.0;
 	//printf("%d\n", n);
 	
 	FILE *file = fopen("erreur.txt", "w");
 	
 	
-	for (int n=2; n<10000; n++) {
+	for (int n=2; n<100; n++) {
 		double dx = (b-a)/(n-1);
 		//printf("dx=%lf, n=%d\n", dx, n);
 		double *tab = malloc(n * sizeof *tab);
@@ -83,7 +79,7 @@ int main() {
 		rec_droite = rectangle_droite(tab, n, dx);
 		rec_milieu = rectangle_milieu(tab, n, dx);	
 		trap = trapeze(tab, n, dx);
-		simp = simpson(tab, n, dx);
+		if (n%2==1) simp = simpson(tab, n, dx);
 		/*
 		printf("Le résultat du rectangle à gauche est: %lf\n", rec_gauche);
 		printf("Le résultat du rectangle à droite est: %lf\n", rec_droite);
