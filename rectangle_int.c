@@ -65,8 +65,9 @@ int main() {
 	FILE *file = fopen("erreur.txt", "w");
 	
 	
-	for (int n=2; n<100; n++) {
-		double dx = (b-a)/(n-1);
+	for (int m=1; m<10000; m+=1) {
+		int n = m+1;
+		double dx = (b-a)/(m);
 		//printf("dx=%lf, n=%d\n", dx, n);
 		double *tab = malloc(n * sizeof *tab);
 		
@@ -79,7 +80,12 @@ int main() {
 		rec_droite = rectangle_droite(tab, n, dx);
 		rec_milieu = rectangle_milieu(tab, n, dx);	
 		trap = trapeze(tab, n, dx);
-		if (n%2==1) simp = simpson(tab, n, dx);
+		
+		double simp_err = NAN;
+		if (n%2==1) {
+			simp = simpson(tab, n, dx); 
+			simp_err = fabs(simp - val_exacte);
+		}
 		/*
 		printf("Le résultat du rectangle à gauche est: %lf\n", rec_gauche);
 		printf("Le résultat du rectangle à droite est: %lf\n", rec_droite);
@@ -88,7 +94,7 @@ int main() {
 		printf("Erreur droite : %e\n", fabs(rec_droite - val_exacte));
 		printf("Erreur milieu : %e\n", fabs(rec_milieu - val_exacte));
 		*/
-		fprintf(file, "%d \t\t %e \t\t %e \t\t %e \t\t %e \t\t %e\n", n, fabs(rec_gauche - val_exacte), fabs(rec_droite - val_exacte), fabs(rec_milieu - val_exacte), fabs(trap - val_exacte), fabs(simp - val_exacte));
+		fprintf(file, "%d \t\t %e \t\t %e \t\t %e \t\t %e \t\t %e\n", n, fabs(rec_gauche - val_exacte), fabs(rec_droite - val_exacte), fabs(rec_milieu - val_exacte), fabs(trap - val_exacte), simp_err);
 	  
 		free(tab);
 	}
